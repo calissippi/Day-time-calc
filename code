@@ -1,0 +1,88 @@
+def add_time(start, duration, day = False):
+#     string for final time
+    new_time = ""
+    days_later = 0
+# weekday dict
+    weekday ={1:"Sunday", 2:"Monday", 3:"Tuesday", 4:"Wednesday", 5:"Thursday", 
+              6:"Friday", 7:"Saturday"}
+    time_mark = {0:"AM", 1:"PM"}
+    
+    
+    start_time = start.replace(":", " ").split()
+    
+    start_hour = int(start_time[0])
+    start_min = (start_time[1]).zfill(2)
+    start_min = int(start_min)
+    
+    dur_time = duration.split(":")
+    
+    dur_hour = int(dur_time[0])
+    dur_min = (dur_time[1]).zfill(2)
+    dur_min = int(dur_min)
+    
+    new_min = start_min + dur_min
+          
+        
+#     adjusting to 24hr time
+    if "AM" in start_time:
+        hour24 = (start_hour + dur_hour)
+    else:
+        hour24 = (start_hour + (dur_hour + 12))
+        
+#     correcting minutes over 59
+    if new_min > 59:
+        new_min -= 60 
+        hour24 += 1         
+#     am or pm
+    for k, v in time_mark.items():
+        if hour24 < 12:
+            ampm = start_time[2]
+        else:
+            if start_time[2] == v:
+                now_mark = (int(hour24/12)%2)
+                ampm = time_mark[now_mark]
+
+           
+    if hour24 < 12:
+        fin_hrs = hour24
+
+    elif hour24 > 12 and hour24 < 24:
+        fin_hrs = hour24 % 12
+        
+
+    else:
+        days_later = int(hour24 / 24)
+        fin_hrs = hour24 % 12
+        
+        if fin_hrs == 0:
+            fin_hrs = 12
+
+    if days_later == 0:
+        new_time = f'{fin_hrs}:{str(new_min).zfill(2)} {ampm}'
+    elif days_later == 1:
+        new_time = f'{fin_hrs}:{str(new_min).zfill(2)} {ampm} (next day)'
+    else:
+        new_time = f'{fin_hrs}:{str(new_min).zfill(2)} {ampm} ({days_later} days later)'
+   
+                
+            
+    if day != False:
+    
+        today = day.lower().capitalize()
+
+     #         weekday changes 
+    
+        for key, val in weekday.items():
+            if today == val:
+                new_day = key
+        new_day += days_later
+
+        if new_day <= 7:
+            today = weekday[new_day]
+        else:
+            today = weekday[(new_day % 7)]
+        
+        ind = new_time.find("M")
+        new_time = new_time[:ind+1] + ", " + today + new_time[ind+1:]
+                
+    return new_time
